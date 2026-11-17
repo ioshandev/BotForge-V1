@@ -1,0 +1,20 @@
+{
+  "name": "botforge",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev -w @botforge/api\" \"npm run dev -w @botforge/web\"",
+    "build": "npm run build -w @botforge/shared && npm run build --workspaces --if-present",
+    "typecheck": "npm run build -w @botforge/shared && npm run typecheck --workspaces --if-present",
+    "db:generate": "npm run db:generate -w @botforge/api",
+    "db:push": "npm run db:push -w @botforge/api"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "typescript": "^5.7.2"
+  }
+}
