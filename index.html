@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en" data-theme="dark" data-palette="violet">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="BotForge developer bot workspace">
+  <title>BotForge</title>
+  <style>
+    :root {
+      --accent: #9b5cff;
+      --accent-strong: #7d36e8;
+      --accent-soft: rgba(155, 92, 255, .16);
+      --page: #100d14;
+      --panel: #17131c;
+      --sidebar: #1c1721;
+      --card: #211b25;
+      --field: #261e2b;
+      --border: #3a2f41;
+      --text: #f3edf6;
+      --muted: #9b8ba3;
+      --shadow: 0 18px 70px rgba(0, 0, 0, .28);
+    }
+    [data-theme="light"] {
+      --page: #f5f2f8;
+      --panel: #ffffff;
+      --sidebar: #f0ebf5;
+      --card: #ffffff;
+      --field: #f6f2f9;
+      --border: #ddd4e4;
+      --text: #211a27;
+      --muted: #706276;
+      --shadow: 0 18px 60px rgba(50, 30, 70, .12);
+    }
+    [data-palette="blue"] { --accent: #4b8cff; --accent-strong: #2867dd; --accent-soft: rgba(75, 140, 255, .15); }
+    [data-palette="green"] { --accent: #24b77b; --accent-strong: #118b5b; --accent-soft: rgba(36, 183, 123, .15); }
+    [data-palette="orange"] { --accent: #f07846; --accent-strong: #cf5124; --accent-soft: rgba(240, 120, 70, .15); }
+    [data-palette="pink"] { --accent: #ee5b9c; --accent-strong: #c93477; --accent-soft: rgba(238, 91, 156, .15); }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-width: 320px; background: var(--page); color: var(--text); font: 14px Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif; }
+    button, input, textarea, select { font: inherit; }
+    button { cursor: pointer; }
+    .app { display: flex; min-height: 100vh; background: var(--page); }
+    .sidebar { width: 235px; flex: 0 0 235px; padding: 22px 12px; border-right: 1px solid var(--border); background: var(--sidebar); display: flex; flex-direction: column; }
+    .brand { display: flex; align-items: center; gap: 10px; padding: 4px 12px 30px; color: var(--text); font-size: 17px; letter-spacing: .5px; }
+    .brand-mark { display: grid; place-items: center; width: 31px; height: 31px; border-radius: 9px; color: white; background: linear-gradient(140deg, var(--accent), var(--accent-strong)); font-size: 18px; }
+    .workspace { display: flex; gap: 4px; padding: 0 8px 18px; }
+    .scope { border: 0; border-radius: 7px; padding: 6px 9px; color: var(--muted); background: transparent; font-size: 12px; }
+    .scope.active { color: var(--accent); background: var(--accent-soft); }
+    .nav { display: grid; gap: 4px; }
+    .nav-button { display: flex; align-items: center; gap: 11px; width: 100%; border: 0; border-radius: 8px; padding: 10px 12px; color: var(--muted); background: transparent; text-align: left; }
+    .nav-button:hover, .nav-button.active { color: var(--text); background: var(--accent-soft); }
+    .nav-icon { width: 18px; color: var(--accent); text-align: center; font-size: 16px; }
+    .badge { margin-left: auto; min-width: 19px; border-radius: 10px; padding: 2px 6px; color: white; background: var(--accent); text-align: center; font-size: 10px; }
+    .nav-label { margin: 18px 12px 6px; color: var(--muted); font-size: 11px; letter-spacing: 1px; text-transform: uppercase; }
+    .sidebar-bottom { margin-top: auto; display: flex; align-items: center; gap: 9px; padding: 13px 12px; color: var(--muted); font-size: 12px; }
+    .sidebar-bottom button { margin-left: auto; border: 0; color: var(--muted); background: transparent; font-size: 18px; }
+    .main { min-width: 0; flex: 1; background: var(--panel); }
+    .topbar { display: flex; justify-content: flex-end; align-items: center; height: 65px; padding: 0 30px; border-bottom: 1px solid var(--border); }
+    .top-search { width: min(340px, 45vw); border: 1px solid var(--border); border-radius: 8px; outline: 0; padding: 9px 13px; color: var(--text); background: var(--field); }
+    .top-search:focus, .filter:focus-within { border-color: var(--accent); }
+    .top-search::placeholder { color: var(--muted); }
+    .top-actions { display: flex; align-items: center; gap: 12px; margin-left: 18px; }
+    .icon-button { position: relative; border: 0; color: var(--muted); background: transparent; font-size: 19px; }
+    .notice { position: absolute; top: -4px; right: -5px; min-width: 15px; border-radius: 10px; padding: 1px 4px; color: white; background: var(--accent); font-size: 9px; }
+    .content { width: min(1080px, 100%); margin: 0 auto; padding: 36px 32px 70px; }
+    .heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 18px; margin-bottom: 24px; }
+    h1, h2, h3, p { margin: 0; }
+    h1 { font-size: 25px; letter-spacing: -.5px; }
+    .heading p { margin-top: 7px; color: var(--muted); font-size: 12px; }
+    .primary { border: 0; border-radius: 8px; padding: 10px 15px; color: white; background: var(--accent-strong); font-weight: 700; }
+    .primary:hover { filter: brightness(1.12); }
+    .toolbar { display: flex; gap: 12px; margin-bottom: 15px; }
+    .filter { display: flex; align-items: center; gap: 8px; min-width: 0; flex: 1; border: 1px solid var(--border); border-radius: 8px; padding: 0 12px; background: var(--field); }
+    .filter input { width: 100%; border: 0; outline: 0; padding: 9px 0; color: var(--text); background: transparent; }
+    .filter input::placeholder { color: var(--muted); }
+    .toggle { display: flex; gap: 2px; border: 1px solid var(--border); border-radius: 8px; padding: 3px; background: var(--field); }
+    .toggle button { border: 0; border-radius: 6px; padding: 6px 11px; color: var(--muted); background: transparent; font-size: 12px; }
+    .toggle button.active { color: var(--text); background: var(--accent-soft); }
+    .bot-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+    .bot-grid.list { grid-template-columns: 1fr; }
+    .bot-card { border: 1px solid var(--border); border-radius: 11px; padding: 16px; background: var(--card); transition: transform .18s, border-color .18s; }
+    .bot-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+    .bot-head { display: flex; gap: 11px; min-height: 57px; }
+    .avatar { display: grid; flex: 0 0 34px; place-items: center; width: 34px; height: 34px; border-radius: 50%; color: white; background: var(--accent); font-size: 19px; }
+    .avatar.blue { background: #3685ef; } .avatar.green { background: #18a779; } .avatar.orange { background: #db8d14; } .avatar.pink { background: #db4387; }
+    .bot-title { min-width: 0; flex: 1; }
+    .bot-title h3 { margin: 1px 0 5px; font-size: 15px; }
+    .bot-title p { overflow: hidden; color: var(--muted); font-size: 11px; line-height: 1.4; text-overflow: ellipsis; }
+    .default { margin-left: 6px; border-radius: 9px; padding: 2px 6px; color: #43d77d; background: rgba(43, 186, 99, .15); font-size: 10px; font-weight: 500; }
+    .more { align-self: flex-start; border: 0; color: var(--muted); background: transparent; font-size: 18px; }
+    .divider { height: 1px; margin: 13px 0 11px; background: var(--border); }
+    .meta { display: grid; grid-template-columns: 1fr 1.2fr; gap: 11px 18px; }
+    .meta span { display: block; color: var(--muted); font-size: 9px; letter-spacing: .4px; text-transform: uppercase; }
+    .meta strong { display: block; overflow: hidden; margin-top: 3px; color: var(--text); font-size: 10px; font-weight: 500; text-overflow: ellipsis; white-space: nowrap; }
+    .list .meta { grid-template-columns: repeat(4, 1fr); }
+    .empty { grid-column: 1 / -1; padding: 65px 20px; border: 1px dashed var(--border); border-radius: 11px; color: var(--muted); text-align: center; }
+    .empty strong { display: block; margin-bottom: 8px; color: var(--text); font-size: 17px; }
+    .overview-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; margin-bottom: 14px; }
+    .metric { border: 1px solid var(--border); border-radius: 12px; padding: 17px; background: var(--card); }
+    .metric-top { display: flex; align-items: center; justify-content: space-between; color: var(--muted); font-size: 11px; }
+    .metric-icon { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 8px; color: var(--accent); background: var(--accent-soft); font-size: 15px; }
+    .metric strong { display: block; margin-top: 15px; font-size: 25px; letter-spacing: -.5px; }
+    .metric small { color: #43c978; font-size: 10px; }
+    .dashboard-columns { display: grid; grid-template-columns: 1.65fr 1fr; gap: 14px; margin-bottom: 14px; }
+    .widget { border: 1px solid var(--border); border-radius: 12px; padding: 18px; background: var(--card); }
+    .widget-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+    .widget-head h2 { font-size: 15px; }.widget-head span { color: var(--muted); font-size: 11px; }
+    .chart { display: flex; align-items: end; gap: 12px; height: 150px; padding: 12px 4px 0; border-bottom: 1px solid var(--border); }
+    .chart-column { display: flex; flex: 1; align-items: end; justify-content: center; gap: 4px; height: 100%; }
+    .bar { width: 11px; min-height: 12px; border-radius: 7px 7px 0 0; background: var(--accent); }.bar.alt { background: color-mix(in srgb, var(--accent) 45%, white); }
+    .chart-labels { display: flex; justify-content: space-around; padding-top: 8px; color: var(--muted); font-size: 10px; }
+    .health-ring { display: grid; place-items: center; width: 130px; height: 130px; margin: 8px auto 16px; border-radius: 50%; background: conic-gradient(var(--accent) 0 78%, var(--accent-soft) 78% 100%); }
+    .health-ring::after { display: grid; place-items: center; width: 92px; height: 92px; border-radius: 50%; color: var(--text); background: var(--card); content: "78%"; font-size: 20px; font-weight: 700; }
+    .health-legend { display: grid; gap: 9px; color: var(--muted); font-size: 11px; }.health-legend span { display: flex; justify-content: space-between; }.health-legend b { color: var(--text); font-weight: 500; }
+    .activity { display: grid; gap: 10px; }.activity-row { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--border); }.activity-row:last-child { border-bottom: 0; }.activity-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); }.activity-row div { min-width: 0; flex: 1; }.activity-row strong { display: block; font-size: 11px; }.activity-row small { color: var(--muted); font-size: 10px; }
+    .quick-actions { display: flex; flex-wrap: wrap; gap: 9px; }.quick-actions button { border: 1px solid var(--border); border-radius: 8px; padding: 9px 12px; color: var(--text); background: var(--field); font-size: 11px; }.quick-actions button:hover { border-color: var(--accent); }
+    .settings-panel { display: grid; gap: 18px; max-width: 620px; }
+    .setting-card { border: 1px solid var(--border); border-radius: 11px; padding: 20px; background: var(--card); }
+    .setting-card h2 { margin-bottom: 6px; font-size: 16px; }.setting-card p { margin-bottom: 16px; color: var(--muted); font-size: 12px; }
+    .theme-buttons { display: flex; flex-wrap: wrap; gap: 9px; }.theme-buttons button { border: 1px solid var(--border); border-radius: 7px; padding: 8px 12px; color: var(--text); background: var(--field); }.theme-buttons button.active { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-soft); }
+    .palette { display: flex; gap: 12px; }.palette button { width: 27px; height: 27px; border: 3px solid transparent; border-radius: 50%; }.palette button.active { border-color: var(--text); outline: 2px solid var(--accent); outline-offset: 2px; }.p-violet { background: #9b5cff; }.p-blue { background: #4b8cff; }.p-green { background: #24b77b; }.p-orange { background: #f07846; }.p-pink { background: #ee5b9c; }
+    .modal-layer { position: fixed; inset: 0; z-index: 3; display: grid; place-items: center; padding: 20px; background: rgba(0, 0, 0, .65); }.modal { width: min(430px, 100%); border: 1px solid var(--border); border-radius: 13px; padding: 22px; background: var(--card); box-shadow: var(--shadow); }.modal-head { display: flex; justify-content: space-between; margin-bottom: 20px; }.modal-head h2 { font-size: 20px; }.close { border: 0; color: var(--muted); background: transparent; font-size: 24px; }.modal label { display: grid; gap: 7px; margin: 14px 0; color: var(--muted); font-size: 12px; }.modal input, .modal textarea { width: 100%; border: 1px solid var(--border); border-radius: 7px; outline: 0; padding: 10px; color: var(--text); background: var(--field); }.modal textarea { min-height: 80px; resize: vertical; }.modal-actions { display: flex; justify-content: flex-end; gap: 9px; margin-top: 20px; }.secondary { border: 0; border-radius: 7px; padding: 9px 14px; color: var(--muted); background: var(--field); }
+    @media (max-width: 900px) { .overview-grid { grid-template-columns: repeat(2, 1fr); }.dashboard-columns { grid-template-columns: 1fr; } }
+    @media (max-width: 720px) { .sidebar { width: 64px; flex-basis: 64px; padding: 17px 7px; }.brand { justify-content: center; padding: 4px 0 28px; }.brand strong, .workspace, .nav-button:not(.active) span:not(.nav-icon), .nav-label, .sidebar-bottom span:not(:first-child) { display: none; }.nav-button { justify-content: center; padding: 11px 5px; }.badge { position: absolute; margin: -20px -20px 0 0; }.sidebar-bottom { justify-content: center; padding: 10px 0; }.sidebar-bottom button { display: block; margin: 0; }.topbar { padding: 0 14px; }.top-search { width: 50vw; }.content { padding: 28px 14px 55px; }.heading { align-items: flex-start; flex-direction: column; }.bot-grid { grid-template-columns: 1fr; }.list .meta, .meta { grid-template-columns: 1fr 1fr; }.overview-grid { grid-template-columns: 1fr 1fr; gap: 9px; }.metric { padding: 13px; }.metric strong { font-size: 20px; }.chart { gap: 5px; } }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand"><span class="brand-mark">B</span><strong>BOTFORGE</strong></div>
+      <div class="workspace"><button class="scope active">⌂ Local</button><button class="scope">● Remote</button></div>
+      <nav class="nav" id="nav"></nav>
+      <div class="nav-label">Apps</div>
+      <nav class="nav" id="app-nav"></nav>
+      <div class="sidebar-bottom"><span>?</span><span>Help & feedback</span><button id="settings-button" title="Settings">⚙</button></div>
+    </aside>
+    <main class="main">
+      <header class="topbar"><input class="top-search" placeholder="⌘K  Search for anything..." id="top-search"><div class="top-actions"><button class="icon-button">♧<span class="notice">2</span></button></div></header>
+      <section class="content" id="content"></section>
+    </main>
+  </div>
+  <div id="modal-root"></div>
+  <script>
+    const starterBots = [
+      { id: 1, name: "default", description: "Used for all new chats", icon: "◉", color: "violet", built: "botforge_default", workspace: "~/bots/default", model: "auto", default: true },
+      { id: 2, name: "ops", description: "Keeps issue triage and pipeline sweeps green, and flags anything red.", icon: "◒", color: "green", built: "ops", workspace: "~/bots/ops", model: "auto" },
+      { id: 3, name: "release", description: "Opens the weekly dependency bump PR and summarizes the risk.", icon: "◐", color: "orange", built: "botforge_default", workspace: "~/bots/release", model: "auto" },
+      { id: 4, name: "design", description: "Generates launch posters in the brand palette for the campaign.", icon: "◓", color: "pink", built: "botforge_default", workspace: "~/bots/design", model: "auto" }
+    ];
+    const navItems = [["overview", "⌂", "Overview"], ["sessions", "▱", "Sessions", "1"], ["bots", "♧", "Bots"], ["schedule", "▣", "Schedule"], ["artifacts", "⌘", "Artifacts"]];
+    const appItems = [["worlds", "◎", "Worlds"], ["crew", "♙", "Crew Manager"], ["critique", "◉", "Design Critique"], ["radar", "◌", "Issue Radar"], ["launch", "⊙", "LaunchDarkly"], ["oncall", "▱", "Oncall Radar"]];
+    let active = "overview", view = "cards", query = "";
+    let bots = JSON.parse(localStorage.getItem("botforge-bots") || "null") || starterBots;
+    let theme = localStorage.getItem("botforge-theme") || "dark", palette = localStorage.getItem("botforge-palette") || "violet";
+    const root = document.documentElement, content = document.getElementById("content");
+    root.dataset.theme = theme; root.dataset.palette = palette;
+    function navHTML(items) { return items.map(([id, icon, label, count]) => `<button class="nav-button ${active === id ? "active" : ""}" data-page="${id}"><span class="nav-icon">${icon}</span><span>${label}</span>${count ? `<b class="badge">${count}</b>` : ""}</button>`).join(""); }
+    function renderNav() { document.getElementById("nav").innerHTML = navHTML(navItems); document.getElementById("app-nav").innerHTML = navHTML(appItems); document.querySelectorAll("[data-page]").forEach(b => b.onclick = () => { active = b.dataset.page; render(); }); }
+    function botCard(bot) { return `<article class="bot-card"><div class="bot-head"><span class="avatar ${bot.color}">${bot.icon}</span><div class="bot-title"><h3>${escapeHTML(bot.name)}${bot.default ? '<em class="default">Default</em>' : ""}</h3><p>${escapeHTML(bot.description)}</p></div><button class="more" data-delete="${bot.id}" title="Delete bot">⋮</button></div><div class="divider"></div><div class="meta"><div><span>♧ Built from</span><strong>${escapeHTML(bot.built)}</strong></div><div><span>▱ Workspace</span><strong>${escapeHTML(bot.workspace)}</strong></div><div><span>▤ Memory store</span><strong>Private to this Bot</strong></div><div><span>✣ Model</span><strong>${escapeHTML(bot.model)}</strong></div></div></article>`; }
+    function renderOverview() { return `<div class="heading"><div><h1>Good morning, developer.</h1><p>Here is what is happening across your BotForge workspace today.</p></div><button class="primary" id="new-bot">＋ Create Bot</button></div><div class="overview-grid"><div class="metric"><div class="metric-top"><span>Active bots</span><i class="metric-icon">♧</i></div><strong>${bots.length}</strong><small>↑ 2 this month</small></div><div class="metric"><div class="metric-top"><span>Conversations</span><i class="metric-icon">▱</i></div><strong>1,284</strong><small>↑ 18.4% this week</small></div><div class="metric"><div class="metric-top"><span>Workflow runs</span><i class="metric-icon">✣</i></div><strong>438</strong><small>↑ 8.2% this week</small></div><div class="metric"><div class="metric-top"><span>Knowledge sources</span><i class="metric-icon">▤</i></div><strong>24</strong><small>↑ 4 new files</small></div></div><div class="dashboard-columns"><section class="widget"><div class="widget-head"><h2>Bot activity</h2><span>Last 7 months ▾</span></div><div class="chart"><div class="chart-column"><i class="bar" style="height:48%"></i><i class="bar alt" style="height:35%"></i></div><div class="chart-column"><i class="bar" style="height:65%"></i><i class="bar alt" style="height:54%"></i></div><div class="chart-column"><i class="bar" style="height:59%"></i><i class="bar alt" style="height:68%"></i></div><div class="chart-column"><i class="bar" style="height:81%"></i><i class="bar alt" style="height:71%"></i></div><div class="chart-column"><i class="bar" style="height:71%"></i><i class="bar alt" style="height:66%"></i></div><div class="chart-column"><i class="bar" style="height:44%"></i><i class="bar alt" style="height:38%"></i></div><div class="chart-column"><i class="bar" style="height:56%"></i><i class="bar alt" style="height:46%"></i></div></div><div class="chart-labels"><span>Jan</span><span>Feb</span><span>Mar</span><span>Apr</span><span>May</span><span>Jun</span><span>Jul</span></div></section><section class="widget"><div class="widget-head"><h2>Workspace health</h2><span>Live</span></div><div class="health-ring"></div><div class="health-legend"><span>Successful runs <b>92%</b></span><span>Average response <b>1.8s</b></span><span>API availability <b>99.9%</b></span></div></section></div><div class="dashboard-columns"><section class="widget"><div class="widget-head"><h2>Recent activity</h2><span>See all →</span></div><div class="activity"><div class="activity-row"><i class="activity-dot"></i><div><strong>default bot completed a conversation</strong><small>2 minutes ago · 14 messages</small></div></div><div class="activity-row"><i class="activity-dot"></i><div><strong>release workflow was published</strong><small>38 minutes ago · Production</small></div></div><div class="activity-row"><i class="activity-dot"></i><div><strong>Design guidelines.pdf was indexed</strong><small>Yesterday · Knowledge base</small></div></div></div></section><section class="widget"><div class="widget-head"><h2>Quick actions</h2><span>Get started</span></div><div class="quick-actions"><button id="quick-bot">＋ New bot</button><button data-page-action="bots">♧ Manage bots</button><button data-page-action="artifacts">▤ Add knowledge</button><button data-page-action="schedule">▣ Schedule run</button></div></section></div>`; }
+    function renderBots() { const filtered = bots.filter(b => `${b.name} ${b.description}`.toLowerCase().includes(query.toLowerCase())); return `<div class="heading"><div><h1>Bots</h1><p>Separate assistants for separate jobs. Each Bot keeps its own files.</p></div><button class="primary" id="new-bot">＋ New Bot</button></div><div class="toolbar"><label class="filter">⌕<input id="filter" value="${escapeHTML(query)}" placeholder="Filter Bots..."></label><div class="toggle"><button class="${view === "cards" ? "active" : ""}" id="cards">▦ Cards</button><button class="${view === "list" ? "active" : ""}" id="list">☷ List</button></div></div><div class="bot-grid ${view}">${filtered.length ? filtered.map(botCard).join("") : '<div class="empty"><strong>No bots found</strong>Try a different search or create a new bot.</div>'}</div>`; }
+    function renderSettings() { return `<div class="heading"><div><h1>Settings</h1><p>Customize your BotForge workspace.</p></div></div><div class="settings-panel"><div class="setting-card"><h2>Appearance</h2><p>Choose how BotForge looks on this device.</p><div class="theme-buttons"><button data-theme-choice="dark">☾ Dark</button><button data-theme-choice="light">☼ Light</button><button data-theme-choice="system">◐ System</button></div></div><div class="setting-card"><h2>Color palette</h2><p>Select an accent color for your workspace.</p><div class="palette"><button class="p-violet" data-palette-choice="violet" title="Violet"></button><button class="p-blue" data-palette-choice="blue" title="Blue"></button><button class="p-green" data-palette-choice="green" title="Green"></button><button class="p-orange" data-palette-choice="orange" title="Orange"></button><button class="p-pink" data-palette-choice="pink" title="Pink"></button></div></div><div class="setting-card"><h2>Workspace data</h2><p>Your demo bots are stored only in this browser.</p><button class="secondary" id="reset-data">Reset demo data</button></div></div>`; }
+    function renderPlaceholder() { const item = [...navItems, ...appItems].find(x => x[0] === active); return `<div class="empty" style="margin-top: 80px"><strong>${item ? item[2] : "Workspace"}</strong>This area is ready for your ${item ? item[2].toLowerCase() : "workspace"}.</div>`; }
+    function render() { renderNav(); content.innerHTML = active === "overview" ? renderOverview() : active === "bots" ? renderBots() : active === "settings" ? renderSettings() : renderPlaceholder(); bind(); }
+    function bind() { const newButton = document.getElementById("new-bot"); if (newButton) newButton.onclick = openModal; const quickBot = document.getElementById("quick-bot"); if (quickBot) quickBot.onclick = openModal; document.querySelectorAll("[data-page-action]").forEach(b => b.onclick = () => { active = b.dataset.pageAction; render(); }); const filter = document.getElementById("filter"); if (filter) { filter.oninput = e => { query = e.target.value; render(); document.getElementById("filter").focus(); document.getElementById("filter").setSelectionRange(query.length, query.length); }; } const cards = document.getElementById("cards"); if (cards) cards.onclick = () => { view = "cards"; render(); }; const list = document.getElementById("list"); if (list) list.onclick = () => { view = "list"; render(); }; document.querySelectorAll("[data-delete]").forEach(b => b.onclick = () => { if (confirm("Delete this bot?")) { bots = bots.filter(x => x.id !== Number(b.dataset.delete)); save(); render(); } }); document.querySelectorAll("[data-theme-choice]").forEach(b => b.onclick = () => setTheme(b.dataset.themeChoice)); document.querySelectorAll("[data-palette-choice]").forEach(b => b.onclick = () => { palette = b.dataset.paletteChoice; root.dataset.palette = palette; localStorage.setItem("botforge-palette", palette); render(); }); const reset = document.getElementById("reset-data"); if (reset) reset.onclick = () => { bots = starterBots; save(); render(); }; }
+    function setTheme(value) { theme = value === "system" ? (matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark") : value; root.dataset.theme = theme; localStorage.setItem("botforge-theme", theme); render(); }
+    function openModal() { document.getElementById("modal-root").innerHTML = `<div class="modal-layer" id="modal-layer"><div class="modal"><div class="modal-head"><h2>Create a Bot</h2><button class="close" id="close">×</button></div><label>Bot name<input id="bot-name" autofocus placeholder="e.g. support-assistant"></label><label>Description<textarea id="bot-description" placeholder="What should this bot help with?"></textarea></label><div class="modal-actions"><button class="secondary" id="cancel">Cancel</button><button class="primary" id="create">Create Bot</button></div></div></div>`; document.getElementById("close").onclick = closeModal; document.getElementById("cancel").onclick = closeModal; document.getElementById("modal-layer").onclick = e => { if (e.target.id === "modal-layer") closeModal(); }; document.getElementById("create").onclick = createBot; document.getElementById("bot-name").onkeydown = e => { if (e.key === "Enter") createBot(); }; }
+    function createBot() { const name = document.getElementById("bot-name").value.trim(); if (!name) return; bots.push({ id: Date.now(), name, description: document.getElementById("bot-description").value.trim() || "A new BotForge assistant ready for your workflow.", icon: "✦", color: "violet", built: "botforge_default", workspace: "~/bots/" + name.toLowerCase().replace(/\s+/g, "-"), model: "auto" }); save(); closeModal(); render(); }
+    function closeModal() { document.getElementById("modal-root").innerHTML = ""; }
+    function save() { localStorage.setItem("botforge-bots", JSON.stringify(bots)); }
+    function escapeHTML(value) { return String(value).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" })[c]); }
+    document.getElementById("settings-button").onclick = () => { active = "settings"; render(); };
+    document.getElementById("top-search").oninput = e => { query = e.target.value; active = "bots"; render(); };
+    document.addEventListener("keydown", e => { if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") { e.preventDefault(); document.getElementById("top-search").focus(); } });
+    render();
+  </script>
+</body>
+</html>
